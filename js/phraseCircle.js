@@ -3,6 +3,7 @@ class PhraseCircle{
         this.parentElement = _parentElement;
         this.data = _data;
         this.animated = false;
+        this.counter = 1;
 
         this.initVis();
     }
@@ -25,12 +26,12 @@ class PhraseCircle{
         vis.wrangleData();
     }
 
-    wrangleData(phrase_length=150){
+    wrangleData(phrase_length=200){
         let vis = this;
         //TODO: Choose to truncate phrase nearest the next end of sentence that is nearest the proposed phrase length
         let truncated_phrase = vis.data.substring(0, phrase_length);
 
-        vis.displayData = truncated_phrase;
+        vis.displayData = [truncated_phrase];
 
         // Update the visualization
         vis.calculate_radius();
@@ -40,39 +41,69 @@ class PhraseCircle{
     updateVis(){
         let vis = this;
 
-        // Circular arc path
-        vis.arcPath = d3.path();
-        // vis.arcPath.moveTo(235, 235);
+        console.log(vis.displayData);
+
         //TODO: Make center variable to center of svg
         //TODO: Make radius variable to font size and number of letters.
+        vis.arcPath = d3.path();
         vis.arcPath.arc(235, 235, vis.radius, 0, 360)
         vis.arcPath.closePath();
 
-        vis.svg.append("defs").append("path")
+        vis.path = vis.svg.selectAll("#curve").data(vis.displayData);
+        vis.path.enter()
+            .append("path")
             .attr("id", "curve")
-            .attr("d", vis.arcPath)
             .attr("fill", 255)
-            .attr("opacity", .1);
+            .attr("opacity", .01)
+            .merge(vis.path)
+            .transition()
+            .duration(1000)
+            .attr("d", function(d){
+                console.log("Making a path object");
+                return vis.arcPath;
+            });
 
-        vis.svg.append("text")
+        vis.svg.selectAll("#curve-text").remove();
+
+        vis.displayText = vis.svg.selectAll("#curve-text").data(vis.displayData);
+        console.log(vis.displayData);
+        vis.displayText.enter()
+            .append("text")
             .attr("id", "curve-text")
             .append("textPath")
-            .attr("xlink:href", "#curve")
-            .text(vis.displayData);
+            .attr("href", "#curve")
+            .merge(vis.displayText)
+            .attr("opacity", 1)
+            .text(d => d);
+            // .transition()
+            // .duration(1000)
+            // .attr("opacity", 1);
 
-        vis.svg.append("use")
-            .attr("id", "curve-line")
-            .attr("xlink:href", "#curve");
+        // vis.svg.append("use")
+        //     .attr("id", "curve-line")
+        //     .attr("xlink:href", "#curve");
     }
 
     calculate_radius(){
         let vis = this;
+
         vis.temp_text = vis.svg.append("text")
-            .text(vis.displayData)
-            .attr("opacity", 0);
+            .attr("id", "temp-text")
+            .attr("opacity", 0)
+            .text(vis.displayData[0]);
 
         let circumfrence = vis.temp_text.node().getBBox().width;
-        vis.radius = circumfrence / 6.28;
+        vis.radius = (circumfrence / 6.28)*1.01;
+
+        vis.svg.select("#temp-text").remove();
+
         console.log(vis.radius);
+    }
+
+    new_phrase(){
+        let vis = this;
+        vis.data = test_phrases[vis.counter];
+        vis.counter++;
+        vis.wrangleData();
     }
 }

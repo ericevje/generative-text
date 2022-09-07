@@ -12,10 +12,30 @@ let test_phrases = ["Here we are again at an age when Europe is awash in the ima
     "that such a plan actually cannot be realized, because one has " +
     "heard too much about it and too little about the meaning of such a plan."];
 
+let url = "http://10.0.0.225:8000/generate-start"
+var phrase;
 
+fetch(url).then(function(response) {
+    phrase = response.json()
+    phrase_circle = new PhraseCircle("payload-column", phrase)
+    return response.json();
+}).then(function(data) {
+  console.log(data);
+}).catch(function() {
+  console.log("Booo");
+});
 
-phrase_circle = new PhraseCircle("payload-column", test_phrases[0]);
 
 function newPhrase(){
-    phrase_circle.new_phrase();
+    fetch(url).then(function(response) {
+        phrase = response.json()
+        phrase_circle.new_phrase(phrase);
+//        phrase_circle = new PhraseCircle("payload-column", phrase)
+        return response.json();
+    }).then(function(data) {
+        console.log(data);
+    }).catch(function() {
+        console.log("Booo");
+    });
+//    phrase_circle.new_phrase();
 }

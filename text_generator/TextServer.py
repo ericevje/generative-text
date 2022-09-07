@@ -42,5 +42,7 @@ class TextServer:
             top_k=0
         )
 
+        text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         print("Generated text:")
-        print(self.tokenizer.decode(outputs[0], skip_special_tokens=True))
+        print(text)
+        return text

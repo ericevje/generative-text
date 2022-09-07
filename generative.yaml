@@ -35,6 +35,7 @@ dependencies:
     - ipykernel
     - nltk
     - transformers
+    - flask
 
 
     - pip:

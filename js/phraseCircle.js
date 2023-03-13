@@ -100,10 +100,10 @@ class PhraseCircle{
         console.log(vis.radius);
     }
 
-    new_phrase(){
+    new_phrase(text){
+        console.log(text);
         let vis = this;
-        vis.data = test_phrases[vis.counter];
-        vis.counter++;
+        vis.data = text;
         vis.wrangleData();
     }
 }
